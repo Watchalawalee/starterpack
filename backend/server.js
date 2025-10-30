@@ -1,18 +1,35 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Backend already running");
+const users = [
+  { email: "admin@example.com", password: "admin1234", name: "Admin" },
+];
+
+app.get("/api/backend-status", (req, res) => {
+  res.json({ message: "Server is Running." });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+  const user = users.find((u) => u.email === email && u.password === password);
+
+  if (user) {
+    res.json({
+      success: true,
+      message: "เข้าสู่ระบบสำเร็จ!",
+      user: { name: user.name, email: user.email },
+    });
+  } else {
+    res.status(401).json({
+      success: false,
+      message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+    });
+  }
 });
+
+const PORT = 5000;
+app.listen(PORT, () => console.log(`✅ Mock backend running on port ${PORT}`));
